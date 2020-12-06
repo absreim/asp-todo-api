@@ -1,13 +1,15 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Exceptions;
+
 using TodoApi.Models;
 
 namespace TodoApi.Services
 {
-    public class TodoItemService
+    public class TodoItemService: ITodoItemService
     {
         private readonly TodoContext _todoContext;
 
@@ -33,7 +35,7 @@ namespace TodoApi.Services
             return entry.Entity;
         }
 
-        public async void Replace(TodoItem todoItem)
+        public async Task<TodoItem> Replace(TodoItem todoItem)
         {
             var id = todoItem.Id;
             _todoContext.Entry(todoItem).State = EntityState.Modified;
@@ -41,15 +43,17 @@ namespace TodoApi.Services
             {
                 await _todoContext.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (CosmosException e)
             {
-                if (!TodoItemExists(id))
+                if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    throw new TodoItemNotFoundException();
+                    return null;
                 }
 
                 throw;
             }
+
+            return todoItem;
         }
 
         public async Task<TodoItem> Delete(string id)

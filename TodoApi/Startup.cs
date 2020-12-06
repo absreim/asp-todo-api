@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TodoApi.Models;
+using TodoApi.Services;
 
 namespace TodoApi
 {
@@ -22,6 +23,7 @@ namespace TodoApi
         {
             services.AddDbContext<TodoContext>(opt =>
                 opt.UseCosmos(Configuration["AzureCosmosDB:ReadWriteKey"], databaseName: "Todos"));
+            services.AddScoped<ITodoItemService, TodoItemService>();
             services.AddControllers();
         }
 
