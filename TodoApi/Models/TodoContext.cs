@@ -10,5 +10,12 @@ namespace TodoApi.Models
         }
         
         public DbSet<TodoItem> TodoItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultContainer("PublicTodos");
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<TodoItem>().HasPartitionKey(i => i.Id);
+        }
     }
 }
