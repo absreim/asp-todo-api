@@ -21,7 +21,7 @@ namespace TodoApiTests
 
             var result = await controller.GetTodoItem(id);
             
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result.Result);
         }
     }
 }
