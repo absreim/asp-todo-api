@@ -36,7 +36,6 @@ namespace TodoApi.Services
 
         public async Task<TodoItem> Replace(TodoItem todoItem)
         {
-            var id = todoItem.Id;
             _todoContext.Entry(todoItem).State = EntityState.Modified;
             try
             {
