@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
@@ -68,11 +67,6 @@ namespace TodoApi.Services
             await _todoContext.SaveChangesAsync();
 
             return todoItem;
-        }
-        
-        private bool TodoItemExists(string id)
-        {
-            return _todoContext.TodoItems.Any(e => e.Id.Equals(id));
         }
     }
 }
