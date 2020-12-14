@@ -6,7 +6,7 @@ using TodoApi.Models;
 using TodoApi.Services;
 using Xunit;
 
-namespace TodoApiTests
+namespace TodoApiUnitTests
 {
     public class TodoItemsControllerTests
     {
