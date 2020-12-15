@@ -12,9 +12,9 @@ namespace TodoApiFunctionalTests
 {
     public class TestFixture : IDisposable
     {
-        private TodoContext _db;
-        
         public HttpClient Client { get; }
+
+        private readonly WebApplicationFactory<Startup> _factory;
         
         public TestFixture()
         {
@@ -32,21 +32,24 @@ namespace TodoApiFunctionalTests
                     services.AddDbContext<TodoContext>(opt =>
                         opt.UseCosmos(testConfig["AzureCosmosDB:ReadWriteKey"],
                             databaseName: "Todos"));
-                    
-                    var sp = services.BuildServiceProvider();
-                    
-                    using var scope = sp.CreateScope();
-                    var scopedServices = scope.ServiceProvider;
-                    _db = scopedServices.GetRequiredService<TodoContext>();
                 });
             });
 
+            _factory = factory;
             Client = factory.CreateClient();
         }
         
         public void Dispose()
         {
-            _db?.TodoItems.RemoveRange(_db.TodoItems);
+            var testConfig = new ConfigurationBuilder()
+                .AddUserSecrets<TestFixture>().Build();
+            var contextOptions = new DbContextOptionsBuilder<TodoContext>()
+                .UseCosmos(testConfig["AzureCosmosDB:ReadWriteKey"],
+                    databaseName: "Todos").Options;
+            var context = new TodoContext(contextOptions);
+            context.TodoItems.RemoveRange(context.TodoItems);
+            context.SaveChanges();
+            _factory.Dispose();
         }
     }
 }
